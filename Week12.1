@@ -1,0 +1,34 @@
+import threading
+import time
+
+class RTOSTask:
+    def __init__(self, name, priority, execution_time):
+        self.name = name
+        self.priority = priority
+        self.execution_time = execution_time
+        
+def task_execution(task):
+    print(f"Task {task.name} started")
+    time.sleep(task.execution_time)
+    print(f"Task {task.name} finished")
+    
+def schedule_tasks(tasks):
+    # Lower priority number means higher priority
+    tasks.sort(key=lambda x: x.priority)
+    
+    threads = []
+    for task in tasks:
+        thread = threading.Thread(target=task_execution, args=(task,))
+        threads.append(thread)
+        thread.start()  # Start each thread
+        
+    for thread in threads:
+        thread.join()   # Wait for all threads to finish
+        
+if __name__ == "__main__":
+    task1 = RTOSTask("Task 1", 2, 2)
+    task2 = RTOSTask("Task 2", 1, 3)
+    task3 = RTOSTask("Task 3", 3, 1)
+    
+    tasks = [task1, task2, task3]
+    schedule_tasks(tasks)
