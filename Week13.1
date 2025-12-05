@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Created on Sat Nov 25 23:18:28 2023
+# Author: pitamaya
+
+import threading
+import time
+
+# Semaphore for task synchronization
+semaphore = threading.Semaphore(0)
+
+class RTOSTask:
+    def __init__(self, name, priority, execution_time):
+        self.name = name
+        self.priority = priority
+        self.execution_time = execution_time
+
+def task_execution(task):
+    print(f"Task {task.name} started with priority {task.priority}")
+    time.sleep(task.execution_time)
+    print(f"Task {task.name} finished")
+
+def scheduler(tasks):
+    # Sort tasks based on priority (lower = higher priority)
+    tasks.sort(key=lambda x: x.priority)
+
+    # Create and start threads for each task
+    threads = [
+        threading.Thread(target=task_execution, args=(task,), daemon=True)
+        for task in tasks
+    ]
+
+    # Start threads following assigned priorities
+    for thread in threads:
+        thread.start()
+        thread.join()
+
+if __name__ == "__main__":
+    # Define RTOS tasks: (name, priority, execution_time)
+    task1 = RTOSTask("Task 1", 2, 3)
+    task2 = RTOSTask("Task 2", 1, 2)
+    task3 = RTOSTask("Task 3", 3, 1)
+
+    # Simulate RTOS scheduling and execution with synchronization
+    tasks = [task1, task2, task3]
+    scheduler(tasks)
